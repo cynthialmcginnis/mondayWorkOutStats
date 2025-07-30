@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monday Workout vs Weekly Calories - Statistics Class</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            padding: 30px;
+        }
+
+        .research-question {
+            background: linear-gradient(135deg, #ffecd2 0%, #fcb69f 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 5px solid #ff6b35;
+        }
+
+        .research-question h2 {
+            color: #d63031;
+            margin-bottom: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .card {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e9ecef;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            color: #2d3436;
+            margin-bottom: 15px;
+            font-size: 1.2rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            font-size: 0.9rem;
+        }
+
+        .chart-container {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .generate-btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            font-size: 1.1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+            display: block;
+            margin: 0 auto 20px;
+        }
+
+        .generate-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .data-table {
+            overflow-x: auto;
+            margin-bottom: 30px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        th {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+
+        tr:hover {
+            background-color: #e3f2fd;
+        }
+
+        .monday-yes {
+            color: #27ae60;
+            font-weight: bold;
+        }
+
+        .monday-no {
+            color: #e74c3c;
+            font-weight: bold;
+        }
+
+        .method-card {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            border-left: 5px solid #00b894;
+        }
+
+        .hypothesis-card {
+            background: linear-gradient(135deg, #ffd89b 0%, #19547b 100%);
+            color: white;
+        }
+
+        .results-card {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            border-left: 5px solid #fd79a8;
+        }
+
+        .teaching-notes {
+            background: linear-gradient(135deg, #e0c3fc 0%, #9bb5ff 100%);
+            padding: 20px;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        .teaching-notes h3 {
+            color: #2d3436;
+            margin-bottom: 15px;
+        }
+
+        .teaching-notes ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+
+        .teaching-notes li {
+            padding: 5px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .teaching-notes li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #00b894;
+            font-weight: bold;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏋️ Monday Workout Analysis</h1>
+            <p>Two-Sample Hypothesis Testing & Confidence Intervals</p>
+        </div>
+
+        <div class="content">
+            <div class="research-question">
+                <h2>📊 Research Question</h2>
+                <p><strong>"Do people who work out on Monday expend more calories per week than those who do not work out on Monday?"</strong></p>
+            </div>
+
+            <div class="grid">
+                <div class="card method-card">
+                    <h3>🔬 Calorie Calculation Method</h3>
+                    <p><strong>Formula:</strong> Calories = MET × Weight (kg) × Duration (hours)</p>
+                    <br>
+                    <div class="stats-grid">
+                        <div>
+                            <strong>MET Values:</strong><br>
+                            • HIIT: 8.0<br>
+                            • Cycling: 7.5<br>
+                            • Strength: 6.0<br>
+                            • Aqua: 5.5<br>
+                            • Yoga: 3.0
+                        </div>
+                        <div>
+                            <strong>Durations:</strong><br>
+                            • Yoga: 75 min<br>
+                            • Most: 60 min<br>
+                            • HIIT: 45 min
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <h3>📈 Current Sample</h3>
+                    <div id="sampleInfo">
+                        <p><strong>Sample #<span id="sampleNumber">1</span></strong></p>
+                        <div class="stats-grid">
+                            <div>
+                                <strong>Monday Group:</strong><br>
+                                n = <span id="mondayCount">0</span><br>
+                                Mean: <span id="mondayMean">0</span> cal<br>
+                                SD: <span id="mondaySD">0</span>
+                            </div>
+                            <div>
+                                <strong>Non-Monday Group:</strong><br>
+                                n = <span id="nonMondayCount">0</span><br>
+                                Mean: <span id="nonMondayMean">0</span> cal<br>
+                                SD: <span id="nonMondaySD">0</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <canvas id="comparisonChart" width="400" height="200"></canvas>
+            </div>
+
+            <div class="grid">
+                <div class="card hypothesis-card">
+                    <h3>🧪 Hypothesis Test Setup</h3>
+                    <p><strong>H₀:</strong> μ₁ = μ₂ (No difference in weekly calories)</p>
+                    <p><strong>H₁:</strong> μ₁ ≠ μ₂ (Difference exists)</p>
+                    <p><strong>α:</strong> 0.05</p>
+                    <p><strong>Test:</strong> Two-sample t-test</p>
+                </div>
+
+                <div class="card results-card">
+                    <h3>📊 Test Results</h3>
+                    <p><strong>Difference:</strong> <span id="difference">0</span> calories</p>
+                    <p><strong>t-statistic:</strong> <span id="tStat">0</span></p>
+                    <p><strong>df:</strong> <span id="df">0</span></p>
+                    <p><strong>Standard Error:</strong> <span id="se">0</span></p>
+                </div>
+            </div>
+
+            <button class="generate-btn" onclick="generateNewSample()">
+                🎲 Generate New Sample (n=15)
+            </button>
+            <p style="text-align: center; color: #636e72; margin-bottom: 20px;">
+                Each student gets a unique sample for their analysis
+            </p>
+
+            <div class="data-table">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Weight (kg)</th>
+                            <th>Works Out Monday?</th>
+                            <th>Weekly Calories</th>
+                            <th>Sessions/Week</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tableBody">
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="teaching-notes">
+                <h3>👩‍🏫 Teaching Notes</h3>
+                <ul>
+                    <li>Each sample contains exactly 15 participants</li>
+                    <li>Calories calculated using scientifically accurate MET values</li>
+                    <li>Students can practice both hypothesis testing and confidence intervals</li>
+                    <li>Real-world context makes statistics meaningful and engaging</li>
+                    <li>Data includes weight, activity type, and attendance for full analysis</li>
+                    <li>Perfect for demonstrating sampling distribution concepts</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let currentSample = 0;
+        let chart;
+
+        // MET values for different activities
+        const activityMETs = {
+            'Strength': 6.0,
+            'HIIT': 8.0,
+            'Cycling': 7.5,
+            'Aqua': 5.5,
+            'Yoga': 3.0,
+            'Unknown': 5.0
+        };
+
+        // Typical class durations (in hours)
+        const classDurations = {
+            'Strength': 1.0,
+            'HIIT': 0.75,
+            'Cycling': 1.0,
+            'Aqua': 1.0,
+            'Yoga': 1.25,
+            'Unknown': 1.0
+        };
+
+        // Generate realistic fitness class data
+        function generateFitnessData() {
+            const days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+            const activities = ['Strength', 'HIIT', 'Cycling', 'Aqua', 'Yoga'];
+            const data = [];
+
+            for (let i = 0; i < 1000; i++) {
+                const weight = 55 + Math.random() * 60; // 55-115 kg
+                const day = days[Math.floor(Math.random() * days.length)];
+                const activity = activities[Math.floor(Math.random() * activities.length)];
+                const attended = Math.random() > 0.3; // 70% attendance rate
+                
+                let calories = 0;
+                if (attended) {
+                    const met = activityMETs[activity];
+                    const duration = classDurations[activity];
+                    calories = met * weight * duration;
+                    calories = calories * (0.8 + Math.random() * 0.4); // ±20% variation
+                }
+
+                data.push({
+                    id: i + 1,
+                    weight: Math.round(weight * 10) / 10,
+                    day,
+                    activity,
+                    attended,
+                    calories: Math.round(calories),
+                    worksOutMonday: day === 'Monday' && attended
+                });
+            }
+
+            return data;
+        }
+
+        // Calculate weekly calories for each person
+        function calculateWeeklyCalories(data) {
+            const weeklyData = {};
+            
+            data.forEach(session => {
+                if (!weeklyData[session.id]) {
+                    weeklyData[session.id] = {
+                        id: session.id,
+                        weight: session.weight,
+                        totalCalories: 0,
+                        worksOutMonday: false,
+                        sessions: []
+                    };
+                }
+                
+                if (session.attended) {
+                    weeklyData[session.id].totalCalories += session.calories;
+                    weeklyData[session.id].sessions.push(session);
+                    if (session.day === 'Monday') {
+                        weeklyData[session.id].worksOutMonday = true;
+                    }
+                }
+            });
+
+            return Object.values(weeklyData);
+        }
+
+        // Generate random sample of size 15
+        function generateSample(population) {
+            const shuffled = [...population].sort(() => 0.5 - Math.random());
+            
+            const mondayUsers = shuffled.filter(person => person.worksOutMonday);
+            const nonMondayUsers = shuffled.filter(person => !person.worksOutMonday);
+            
+            // Ensure balanced sample
+            const mondaySelected = mondayUsers.slice(0, 7 + Math.floor(Math.random() * 2));
+            const nonMondaySelected = nonMondayUsers.slice(0, 15 - mondaySelected.length);
+            
+            return [...mondaySelected, ...nonMondaySelected].slice(0, 15);
+        }
+
+        // Calculate statistics
+        function calculateStats(mondayGroup, nonMondayGroup) {
+            const mondayMean = mondayGroup.reduce((sum, p) => sum + p.totalCalories, 0) / mondayGroup.length;
+            const nonMondayMean = nonMondayGroup.reduce((sum, p) => sum + p.totalCalories, 0) / nonMondayGroup.length;
+            
+            const mondayVariance = mondayGroup.reduce((sum, p) => sum + Math.pow(p.totalCalories - mondayMean, 2), 0) / (mondayGroup.length - 1);
+            const nonMondayVariance = nonMondayGroup.reduce((sum, p) => sum + Math.pow(p.totalCalories - nonMondayMean, 2), 0) / (nonMondayGroup.length - 1);
+            
+            const mondayStd = Math.sqrt(mondayVariance);
+            const nonMondayStd = Math.sqrt(nonMondayVariance);
+            
+            // Two-sample t-test calculation
+            const pooledStd = Math.sqrt(((mondayGroup.length - 1) * mondayVariance + (nonMondayGroup.length - 1) * nonMondayVariance) / (mondayGroup.length + nonMondayGroup.length - 2));
+            const standardError = pooledStd * Math.sqrt(1/mondayGroup.length + 1/nonMondayGroup.length);
+            const tStat = (mondayMean - nonMondayMean) / standardError;
+            const df = mondayGroup.length + nonMondayGroup.length - 2;
+            
+            return {
+                mondayMean: Math.round(mondayMean),
+                nonMondayMean: Math.round(nonMondayMean),
+                mondayStd: Math.round(mondayStd),
+                nonMondayStd: Math.round(nonMondayStd),
+                difference: Math.round(mondayMean - nonMondayMean),
+                tStat: Math.round(tStat * 100) / 100,
+                df,
+                standardError: Math.round(standardError),
+                pooledStd: Math.round(pooledStd)
+            };
+        }
+
+        // Update chart
+        function updateChart(stats) {
+            const ctx = document.getElementById('comparisonChart').getContext('2d');
+            
+            if (chart) {
+                chart.destroy();
+            }
+
+            chart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Works Out Monday', 'Does Not Work Out Monday'],
+                    datasets: [{
+                        label: 'Weekly Calories Burned',
+                        data: [stats.mondayMean, stats.nonMondayMean],
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.8)',
+                            'rgba(255, 99, 132, 0.8)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(255, 99, 132, 1)'
+                        ],
+                        borderWidth: 2
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Weekly Calorie Expenditure Comparison',
+                            font: {
+                                size: 16
+                            }
+                        },
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            title: {
+                                display: true,
+                                text: 'Calories Burned'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+
+        // Update table
+        function updateTable(sampleData) {
+            const tbody = document.getElementById('tableBody');
+            tbody.innerHTML = '';
+
+            sampleData.forEach((person, index) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${person.id}</td>
+                    <td>${person.weight}</td>
+                    <td><span class="${person.worksOutMonday ? 'monday-yes' : 'monday-no'}">
+                        ${person.worksOutMonday ? 'Yes' : 'No'}
+                    </span></td>
+                    <td><strong>${person.totalCalories}</strong></td>
+                    <td>${person.sessions.length}</td>
+                `;
+            });
+        }
+
+        // Generate new sample
+        function generateNewSample() {
+            currentSample++;
+            
+            const fullData = generateFitnessData();
+            const weeklyData = calculateWeeklyCalories(fullData);
+            const sample = generateSample(weeklyData);
+            
+            const mondayUsers = sample.filter(person => person.worksOutMonday);
+            const nonMondayUsers = sample.filter(person => !person.worksOutMonday);
+            
+            const stats = calculateStats(mondayUsers, nonMondayUsers);
+            
+            // Update UI
+            document.getElementById('sampleNumber').textContent = currentSample;
+            document.getElementById('mondayCount').textContent = mondayUsers.length;
+            document.getElementById('nonMondayCount').textContent = nonMondayUsers.length;
+            document.getElementById('mondayMean').textContent = stats.mondayMean;
+            document.getElementById('nonMondayMean').textContent = stats.nonMondayMean;
+            document.getElementById('mondaySD').textContent = stats.mondayStd;
+            document.getElementById('nonMondaySD').textContent = stats.nonMondayStd;
+            document.getElementById('difference').textContent = stats.difference;
+            document.getElementById('tStat').textContent = stats.tStat;
+            document.getElementById('df').textContent = stats.df;
+            document.getElementById('se').textContent = stats.standardError;
+            
+            updateChart(stats);
+            updateTable(sample);
+        }
+
+        // Initialize on page load
+        window.onload = function() {
+            generateNewSample();
+        };
+    </script>
+</body>
+</html>
