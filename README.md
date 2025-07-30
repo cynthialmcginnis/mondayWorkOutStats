@@ -1,5 +1,3 @@
-# mondayWorkOutStats
-App for students to generate samples to use for Hypothesis testing
 # 🏋️ Monday Workout Statistics App
 
 **Live App:** https://cynthialmcginnis.github.io/mondayWorkOutStats
@@ -43,7 +41,7 @@ Calories Burned = MET × Weight (kg) × Duration (hours)
 ## 👨‍🏫 For Instructors
 
 ### Key Features
-- ✅ Generates **unique samples** of size 15 for each student
+- ✅ Generates **unique samples** of size 30 for each student (~15 per group)
 - ✅ **Two clear groups**: Monday workout vs. Non-Monday workout
 - ✅ **Complete hypothesis test setup** with H₀ and H₁
 - ✅ **Automatic calculations** for means, standard deviations, t-statistics
@@ -69,7 +67,7 @@ Students will be able to:
 
 ### How to Use
 1. **Visit the app**: Click the link above
-2. **Generate your sample**: Click "Generate New Sample (n=15)"
+2. **Generate your sample**: Click "Generate New Sample (n=30)"
 3. **Analyze your data**: Use the provided statistics for your hypothesis test
 4. **Take notes**: Record your sample number and results
 5. **Repeat if needed**: Generate new samples to see how results vary
